@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\-4thGrade-\\APS\\Projekat\\AmongUs-OurWay\\AmongUs-OurWay.csproj": {}
+    "C:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\AmongUs-OurWay.csproj": {}
   },
   "projects": {
-    "c:\\-4thGrade-\\APS\\Projekat\\AmongUs-OurWay\\AmongUs-OurWay.csproj": {
+    "C:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\AmongUs-OurWay.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\-4thGrade-\\APS\\Projekat\\AmongUs-OurWay\\AmongUs-OurWay.csproj",
+        "projectUniqueName": "C:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\AmongUs-OurWay.csproj",
         "projectName": "AmongUs-OurWay",
-        "projectPath": "c:\\-4thGrade-\\APS\\Projekat\\AmongUs-OurWay\\AmongUs-OurWay.csproj",
+        "projectPath": "C:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\AmongUs-OurWay.csproj",
         "packagesPath": "C:\\Users\\Luka\\.nuget\\packages\\",
-        "outputPath": "c:\\-4thGrade-\\APS\\Projekat\\AmongUs-OurWay\\obj\\",
+        "outputPath": "C:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Luka\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -40,6 +40,10 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "dependencies": {
+            "Microsoft.AspNetCore": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[5.0.1, )",
@@ -55,6 +59,12 @@
               ]
             },
             "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[5.0.1, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
               "target": "Package",
               "version": "[5.0.1, )"
             },

@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using AmongUs_OurWay.Models;
 
 namespace AmongUs_OurWay
 {
@@ -26,11 +27,16 @@ namespace AmongUs_OurWay
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddDbContext<AmongUsContext>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AmongUs_OurWay", Version = "v1" });
+            });
+            services.AddCors(options =>{
+                options.AddPolicy("ServerPolicyV1", options=>{
+                    options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                });
             });
         }
 
@@ -49,6 +55,8 @@ namespace AmongUs_OurWay
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors("ServerPolicyV1");
 
             app.UseEndpoints(endpoints =>
             {

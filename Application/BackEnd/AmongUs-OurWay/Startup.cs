@@ -12,6 +12,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using AmongUs_OurWay.Models;
+using Microsoft.AspNetCore.SignalR;
+using AmongUs_OurWay.Hubs;
 
 namespace AmongUs_OurWay
 {
@@ -29,6 +31,7 @@ namespace AmongUs_OurWay
         {
             services.AddDbContext<AmongUsContext>();
             services.AddControllers();
+            services.AddSignalR();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AmongUs_OurWay", Version = "v1" });
@@ -49,7 +52,6 @@ namespace AmongUs_OurWay
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AmongUs_OurWay v1"));
             }
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -60,6 +62,7 @@ namespace AmongUs_OurWay
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<ChatHub>("/chat");
                 endpoints.MapControllers();
             });
         }

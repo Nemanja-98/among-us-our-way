@@ -14,10 +14,14 @@ namespace AmongUs_OurWay.Models {
         public DbSet<User> Users { get; set; }
 
         public DbSet<Game> Games { get; set; }
+
+        public DbSet<Friend> Friends { get; set; }
         
         public DbSet<PlayerAction> PlayerActions { get; set; }
 
         public DbSet<GameHistory> GameHistorys { get; set; }
+
+        public DbSet<PendingRequest> PendingRequests { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

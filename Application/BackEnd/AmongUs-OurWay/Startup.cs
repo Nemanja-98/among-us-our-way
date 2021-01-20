@@ -14,6 +14,11 @@ using Microsoft.OpenApi.Models;
 using AmongUs_OurWay.Models;
 using Microsoft.AspNetCore.SignalR;
 using AmongUs_OurWay.Hubs;
+using Newtonsoft.Json;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace AmongUs_OurWay
 {
@@ -30,7 +35,10 @@ namespace AmongUs_OurWay
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AmongUsContext>();
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>{
+                options.SerializerSettings.Formatting = Formatting.Indented;
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            }).AddXmlSerializerFormatters();
             services.AddSignalR();
             services.AddSwaggerGen(c =>
             {
@@ -40,6 +48,16 @@ namespace AmongUs_OurWay
                 options.AddPolicy("ServerPolicyV1", options=>{
                     options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
                 });
+            });
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>{
+                options.TokenValidationParameters=new TokenValidationParameters{
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("AmongUsAwesomeSeacretKey"))
+                };
             });
         }
 
@@ -55,6 +73,8 @@ namespace AmongUs_OurWay
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

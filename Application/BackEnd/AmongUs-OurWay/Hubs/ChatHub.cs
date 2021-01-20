@@ -34,7 +34,7 @@ namespace AmongUs_OurWay.Hubs
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            Clients.All.SendAsync("UsedDiconnected", Context.UserIdentifier, Context.ConnectionId);
+            Clients.All.SendAsync("UserDiconnected", Context.UserIdentifier);
             return base.OnDisconnectedAsync(exception);
         }
     }

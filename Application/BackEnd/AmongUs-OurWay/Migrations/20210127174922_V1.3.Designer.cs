@@ -4,14 +4,16 @@ using AmongUs_OurWay.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AmongUs_OurWay.Migrations
 {
     [DbContext(typeof(AmongUsContext))]
-    partial class AmongUsContextModelSnapshot : ModelSnapshot
+    [Migration("20210127174922_V1.3")]
+    partial class V13
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

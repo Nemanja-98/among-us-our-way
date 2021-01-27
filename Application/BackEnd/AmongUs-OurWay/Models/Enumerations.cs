@@ -7,6 +7,6 @@ namespace AmongUs_OurWay.Models
         VentIn,
         VentOut,
         BodyReported,
-        EmergencieCalled
+        EmergencyCalled
     }
 }

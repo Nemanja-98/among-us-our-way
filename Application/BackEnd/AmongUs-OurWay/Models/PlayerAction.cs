@@ -15,9 +15,6 @@ namespace AmongUs_OurWay.Models
         [DataType(DataType.Text)]
         [Column("UserId")]
         public string UserId { get; set; }
-
-        [NotMapped]
-        public virtual User User { get; set; }
         
         [DataType("int")]
         [Column("GameId")]
@@ -30,8 +27,8 @@ namespace AmongUs_OurWay.Models
         [Column("Action")]
         public action Action { get; set; }
         
-        [DataType(DataType.Time)]
+        [DataType(DataType.Text)]
         [Column("Time")]
-        public System.TimeSpan Time { get; set; }
+        public string Time { get; set; }
     }
 }

@@ -59,8 +59,5 @@ namespace AmongUs_OurWay.Models
         
         [NotMapped]
         public virtual ICollection<PendingRequest> PendingRequests { get; set; }
-
-        [NotMapped]
-        public virtual ICollection<PlayerAction> Actions { get; set; }
     }
 }

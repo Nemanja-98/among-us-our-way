@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using AmongUs_OurWay.Hubs;
 
 namespace AmongUs_OurWay.Controllers
 {
@@ -28,11 +29,19 @@ namespace AmongUs_OurWay.Controllers
             dbContext = db;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [Route("getUsers")]
-        public ActionResult<List<User>> GetUsers(string username)
+        public ActionResult<List<User>> GetUsers()
         {
             return dbContext.Users.ToList();
+        }
+
+        [HttpGet]
+        [Route("getOnlineUsers")]
+        public ActionResult<List<UserConnectionModel>> GetOnlineUsers()
+        {
+            return ChatHub.ActiveUsers;
         }
 
         [HttpGet]
@@ -45,6 +54,7 @@ namespace AmongUs_OurWay.Controllers
             return user;
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("addUser")]
         public ActionResult PostUser(User user)
@@ -65,6 +75,8 @@ namespace AmongUs_OurWay.Controllers
             User user = dbContext.Users.Find(game.UserId);
             if(user == null)
                 return NotFound("User not found");
+            if(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value != user.Username)
+                return Unauthorized();
             user.Games.Add(game);
             dbContext.GameHistorys.Add(game);
             dbContext.SaveChanges();
@@ -81,6 +93,8 @@ namespace AmongUs_OurWay.Controllers
             User user2 = dbContext.Users.Find(friend.User2Ref);
             if((user1 == null) || (user2 == null))
                 return NotFound("Users not found");
+            if(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value != user1.Username)
+                return Unauthorized();
             Friend reverseFriend = new Friend{
                 User1Ref = friend.User2Ref,
                 User2Ref = friend.User1Ref};
@@ -102,6 +116,8 @@ namespace AmongUs_OurWay.Controllers
             User userRecieved = dbContext.Users.Find(pendingRequest.UserReceivedRef);
             if((userSent == null) || (userRecieved == null))
                 return NotFound("Users not found");
+            if(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value != userSent.Username)
+                return Unauthorized();
             userSent.SentRequests.Add(pendingRequest);
             userRecieved.PendingRequests.Add(pendingRequest);
             dbContext.PendingRequests.Add(pendingRequest);
@@ -118,7 +134,8 @@ namespace AmongUs_OurWay.Controllers
             User user = dbContext.Users.Find(action.UserId);
             if(user == null)
                 return NotFound("User not found");
-            user.Actions.Add(action);
+            if(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value != user.Username)
+                return Unauthorized();
             dbContext.PlayerActions.Add(action);
             dbContext.SaveChanges();
             return Ok();
@@ -131,6 +148,10 @@ namespace AmongUs_OurWay.Controllers
             if(!ModelState.IsValid)
                 return BadRequest("Invalid input values");
             User swap = dbContext.Users.Find(user.Username);
+            if(swap == null)
+                return NotFound("User not found");
+            if(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value != swap.Username)
+                return Unauthorized();
             swap.Password = user.Password;
             swap.GamesPlayed = user.GamesPlayed;
             swap.CrewmateGames = user.CrewmateGames;

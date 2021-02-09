@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { Role } from './models/role';
 import { User } from './models/user';
 import { Store } from '@ngrx/store';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app',
@@ -23,7 +24,8 @@ export class AppComponent {
   constructor(
     private router: Router,
     private accountService: AccountService,
-    private store: Store<State>
+    private store: Store<State>,
+    private titleService: Title,
   ) {
     this.accountService.user.subscribe((x) => (this.user = x));
   }
@@ -33,6 +35,7 @@ export class AppComponent {
     console.log(this.currentUser);
   //  this.store.dispatch(new loadProducts());
     this.store.dispatch(new loadUsers());
+    this.titleService.setTitle("AmongUs");
   }
 
   get isAdmin() {

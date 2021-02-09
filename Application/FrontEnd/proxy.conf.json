@@ -1,9 +1,12 @@
 {
-  "*/*": {
+  "/user/*": {
     "target": "https://localhost:5001",
     "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true
+    "logLevel": "debug"
+  },
+  "/game/*": {
+    "target": "https://localhost:5001",
+    "secure": false,
+    "logLevel": "debug"
   }
-
 }

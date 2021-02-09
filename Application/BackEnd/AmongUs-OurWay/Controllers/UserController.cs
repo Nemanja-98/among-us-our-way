@@ -61,6 +61,8 @@ namespace AmongUs_OurWay.Controllers
         {
             if(!ModelState.IsValid)
                 return BadRequest("Invalid input values");
+            if(dbContext.Users.Find(user.Username) != null)
+                return Conflict();
             dbContext.Users.Add(user);
             dbContext.SaveChanges();
             return Ok();

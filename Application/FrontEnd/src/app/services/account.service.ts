@@ -10,7 +10,10 @@ import { User } from './../models/user';
 import { map } from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
-
+import { addUser, loadUsers } from '../store/actions/user.actions';
+class logInSessionToken {
+  token: string;
+}
 @Injectable({
   providedIn: 'root',
 })
@@ -53,21 +56,14 @@ export class AccountService {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     }});;
-    post.toPromise().then(data => {
+    post.toPromise().then((data : logInSessionToken) => {
       console.log("ejta",data);
+      const token = data.token;
+      console.log("tokenche",token);
+      localStorage.setItem('token', token );
     })
     return  post;
-      // .pipe(map((token) => {
-      //     if ( token ) { //&& user.token) {
-      //       console.log("got my token",token);
-      //       //localStorage.setItem('currentUser', JSON.stringify(user));
-      //       localStorage.setItem('token', token);
-      //       //this.http.post()
-      //       //this.userSubject.next(token);
-      //     }
-      //     return token;
-      //   })
-      // );
+      //
   }
 
    logout() {
@@ -76,17 +72,17 @@ export class AccountService {
 //     this.router.navigate(['/account/login']);
    }
 
-//   register(user: User) {
-    
-//     return this.http.post(`${environment.apiUrl}/user/addUser`, user);
-//   }
+  register(user: User) {
+    console.log("registering",user.username,user.password,user);
+    return this.http.post("user/", user);
+  }
 
-//   registerToStore(user: User) {
-//     // user.role = Role.User;
-//     // user.boughtItemId = [];
-//     this.store.dispatch(new addUser(user));
-//     this.store.dispatch(new loadUsers());
-//   }
+  registerToStore(user: User) {
+    // user.role = Role.User;
+    // user.boughtItemId = [];
+    this.store.dispatch(new addUser(user));
+    this.store.dispatch(new loadUsers());
+  }
 
    getAll() {
 //     return this.http.get<User[]>(`${environment.apiUrl}/users`);

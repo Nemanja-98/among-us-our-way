@@ -49,7 +49,7 @@ namespace AmongUs_OurWay
                     options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
                 });
             });
-
+            services.AddSingleton<LiveUsersMenager>(new LiveUsersMenager());
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>{
                 options.TokenValidationParameters=new TokenValidationParameters{
                     ValidateIssuer = false,

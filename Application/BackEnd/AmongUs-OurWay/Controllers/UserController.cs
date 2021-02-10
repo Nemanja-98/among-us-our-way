@@ -29,7 +29,6 @@ namespace AmongUs_OurWay.Controllers
             dbContext = db;
         }
 
-        [AllowAnonymous]
         [HttpGet]
         [Route("getUsers")]
         public ActionResult<List<User>> GetUsers()
@@ -38,10 +37,14 @@ namespace AmongUs_OurWay.Controllers
         }
 
         [HttpGet]
-        [Route("getOnlineUsers")]
-        public ActionResult<List<UserConnectionModel>> GetOnlineUsers()
+        [Route("search/{substr}")]
+        public ActionResult<List<User>> getSearch(string substr)
         {
-            return ChatHub.ActiveUsers;
+            List<User> result = new List<User>();
+            foreach(User u in dbContext.Users.ToList())
+                if(u.Username.Contains(substr))
+                    result.Add(u);
+            return result;
         }
 
         [HttpGet]

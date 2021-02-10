@@ -8,5 +8,15 @@
     "target": "https://localhost:5001",
     "secure": false,
     "logLevel": "debug"
+  },
+  "/chat/*": {
+    "target": "https://localhost:5001",
+    "secure": false,
+    "logLevel": "debug"
+  },
+  "/friend/*": {
+    "target": "https://localhost:5001",
+    "secure": false,
+    "logLevel": "debug"
   }
 }

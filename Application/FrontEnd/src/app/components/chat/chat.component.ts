@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import * as signalR from "@aspnet/signalr";  
+import * as signalR from "@aspnet/signalr";
 import { Friend } from 'src/app/models/profile/friend';
 import { User } from 'src/app/models/user';
 import { Message } from 'src/app/models/message/message';
@@ -11,10 +11,10 @@ import { Message } from 'src/app/models/message/message';
 })
 export class ChatComponent implements OnInit {
   public connection =  new signalR.HubConnectionBuilder()
-  .withUrl("/messages")
+  .withUrl("/chat")
   .build();
   public messages: Array<Message> = [];
-  
+
 
   constructor() { }
 

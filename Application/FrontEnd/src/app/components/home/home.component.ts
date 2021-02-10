@@ -9,22 +9,23 @@ import { FriendsComponent } from '../friends/friends.component';
 import { FriendListComponent } from '..//friends/friend-list/friend-list.component';
 import { HttpClient } from '@angular/common/http';
 import {ChatComponent} from 'src/app/components/chat/chat.component'
+import * as signalR from '@aspnet/signalr';
+import   { Friend } from '../../models/profile/friend'
+// class Friend {
+//   name: string;
+//   status: string;
+//   constructor(n: string, s: string) {
+//     this.name = n;
+//     this.status = s;
+//   }
+// }
 
-class Friend {
-  name: string;
-  status: string;
-  constructor(n: string, s: string) {
-    this.name = n;
-    this.status = s;
-  }
-}
-
-let mockFriends = [
-  new Friend('Jovan', 'in game'),
-  new Friend('5up', 'Offline'),
-  new Friend('Luka', 'Online'),
-  new Friend('Spikii', 'in game'),
-];
+// let mockFriends = [
+//   new Friend('Jovan', 'in game'),
+//   new Friend('5up', 'Offline'),
+//   new Friend('Luka', 'Online'),
+//   new Friend('Spikii', 'in game'),
+// ];
 @Component({
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
@@ -34,9 +35,15 @@ export class HomeComponent {
   loading = false;
   currentUser: User;
   userFromApi: User;
-  friends: Friend[] = mockFriends;
+  friends: Friend[] ;
   textic = '';
   usersArray: Array<any> = []; //users
+  token = "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6Imx1a2EiLCJleHAiOjE2MTMwNjY3NDgsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjUwMDEvIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.givlvRg_VMH51u9GpWjD5k2s4KEZkXs5FDHmn8v2cMg";
+
+  public connection =  new signalR.HubConnectionBuilder()
+  .withUrl("/friend", { accessTokenFactory: () => this.token })
+  .build();
+  public friend: Array<Friend> = [];
 
   constructor(
     private userService: UserService,
@@ -46,11 +53,20 @@ export class HomeComponent {
   ) {
     this.currentUser = this.accountService.userValue;
     //  URL ZA BACKEND IZVUCI U NEKU PROM U ENV
-    this.http.get('SADASD').subscribe((data: any) => {
-      // Populating usersArray with names from API
-      data.json().forEach((element) => {
-        this.usersArray.push(element.name);
-      });
+    // this.http.get('SADASD').subscribe((data: any) => {
+    //   // Populating usersArray with names from API
+    //   data.json().forEach((element) => {
+    //     this.usersArray.push(element.name);
+    //   });
+    // });
+
+    this.connection.on("GetLiveFriends", (frd)=>{
+      this.friend = frd;
+    })
+
+    this.connection.start()
+    .catch( (err)=>{
+      return console.error(err.toString());
     });
   }
 

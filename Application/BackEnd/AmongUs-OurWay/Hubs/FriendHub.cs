@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using AmongUs_OurWay.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AmongUs_OurWay.Hubs
 {
+    [Authorize]
     public class FriendHub : Hub
     {
         private AmongUsContext dbContext;
@@ -50,8 +52,6 @@ namespace AmongUs_OurWay.Hubs
                 User2Ref = friend.User1Ref};
             dbContext.Friends.Add(friend);
             dbContext.Friends.Add(reverseFriend);
-            user1.Friends.Add(friend);
-            user2.Friends.Add(reverseFriend);
             dbContext.SaveChanges();
             string connectionId = userMenager.LiveUsers.GetValueOrDefault(friend.User2Ref);
             if(connectionId == null)
@@ -63,6 +63,7 @@ namespace AmongUs_OurWay.Hubs
         {
             Clients.All.SendAsync("UserConnected", Context.UserIdentifier);
             List<string> liveFriends = new List<string>();
+            Console.WriteLine("Usao");
             User user = dbContext.Users.Find(Context.UserIdentifier);
             ICollection<Friend> friends = user.Friends;
             foreach(var el in userMenager.LiveUsers)

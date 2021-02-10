@@ -105,8 +105,6 @@ namespace AmongUs_OurWay.Controllers
                 User2Ref = friend.User1Ref};
             dbContext.Friends.Add(friend);
             dbContext.Friends.Add(reverseFriend);
-            user1.Friends.Add(friend);
-            user2.Friends.Add(reverseFriend);
             dbContext.SaveChanges();
             return Ok();
         }

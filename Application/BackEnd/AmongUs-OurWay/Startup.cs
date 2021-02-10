@@ -83,6 +83,7 @@ namespace AmongUs_OurWay
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<ChatHub>("/chat");
+                endpoints.MapHub<FriendHub>("/friend");
                 endpoints.MapControllers();
             });
         }

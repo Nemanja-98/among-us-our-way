@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { AccountService } from './../../../services/account.service';
 import { AlertService  } from './../../../services/alert.service';
+import { first } from 'rxjs/operators';
 
 @Component({ templateUrl: './login.component.html',  styleUrls: ['./login.component.css'] })
 export class LoginComponent implements OnInit {
@@ -32,7 +33,7 @@ export class LoginComponent implements OnInit {
             password: ['', Validators.required]
         });
 
-       // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     }
 
     get f() { return this.form.controls; }
@@ -48,11 +49,20 @@ export class LoginComponent implements OnInit {
 
         // this.loading = true;
         console.log("user:",this.f.username.value,this.f.password.value);
-        const response = await this.accountService.login(this.f.username.value, this.f.password.value);
-        console.log("return value",response);
-        setTimeout(() => {
-            console.log(response);
-        }, 2000);
+         const response = await this.accountService.login(this.f.username.value, this.f.password.value);
+        // console.log("return value",response);
+        // setTimeout(() => {
+        //     console.log(response);
+        // }, 2000);
+        response.pipe(first())
+        .subscribe(
+            data => {
+                this.router.navigate([this.returnUrl]);
+            },
+            error => {
+                this.alertService.error(error);
+                this.loading = false;
+            }); 
             // .pipe(first())
             // .subscribe(
             //     data => {

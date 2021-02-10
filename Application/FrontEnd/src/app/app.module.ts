@@ -21,7 +21,8 @@ import { StoreModule } from '@ngrx/store';
 import { metaReducers } from './reducers';
 import { NgModule } from '@angular/core';
 import { ChatComponent } from './components/chat/chat.component';
-
+import { FriendsComponent } from './components/friends/friends.component';
+import {MatCardModule} from '@angular/material/card'; 
 @NgModule({
   imports: [
     FormsModule,
@@ -30,6 +31,7 @@ import { ChatComponent } from './components/chat/chat.component';
     HttpClientModule,
     AppRoutingModule,
     UsersModule,
+    MatCardModule,
     EffectsModule.forRoot([AppEffects]),
     StoreModule.forRoot(rootReducer, {
       metaReducers,
@@ -51,6 +53,7 @@ import { ChatComponent } from './components/chat/chat.component';
     AlertComponent,
     UserProfileComponent,
     ChatComponent,
+    FriendsComponent,
   ],
   exports: [],
   providers: [

@@ -39,17 +39,30 @@ namespace AmongUs_OurWay
                 options.SerializerSettings.Formatting = Formatting.Indented;
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             }).AddXmlSerializerFormatters();
-            services.AddSignalR();
+
+            services.AddSignalR(options =>{
+                options.EnableDetailedErrors = true;
+            })
+            .AddJsonProtocol(options => {
+                options.PayloadSerializerOptions.WriteIndented = true;
+            }).AddMessagePackProtocol();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AmongUs_OurWay", Version = "v1" });
             });
+
             services.AddCors(options =>{
                 options.AddPolicy("ServerPolicyV1", options=>{
-                    options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                    options.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .WithOrigins("http://192.168.1.199:4200")
+                    .AllowCredentials();
                 });
             });
+
             services.AddSingleton<LiveUsersMenager>(new LiveUsersMenager());
+            
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>{
                 options.TokenValidationParameters=new TokenValidationParameters{
                     ValidateIssuer = false,
@@ -73,6 +86,8 @@ namespace AmongUs_OurWay
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseWebSockets();
 
             app.UseAuthentication();
 

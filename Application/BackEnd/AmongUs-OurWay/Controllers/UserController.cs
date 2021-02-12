@@ -29,6 +29,7 @@ namespace AmongUs_OurWay.Controllers
             dbContext = db;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [Route("getUsers")]
         public ActionResult<List<User>> GetUsers()

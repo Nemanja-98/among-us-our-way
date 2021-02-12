@@ -29,8 +29,11 @@ namespace AmongUs_OurWay.Hubs
 
         public override Task OnConnectedAsync()
         {
-            userMenager.LiveUsers.Add(Context.UserIdentifier, Context.ConnectionId);
-            Clients.All.SendAsync("UserConnected", Context.UserIdentifier);
+            if(!userMenager.LiveUsers.ContainsKey(Context.UserIdentifier))
+                userMenager.LiveUsers.Add(Context.UserIdentifier, Context.ConnectionId);
+            else
+                userMenager.LiveUsers[Context.UserIdentifier] = Context.ConnectionId;
+            Clients.Others.SendAsync("UserConnected", Context.UserIdentifier);
             List<string> liveUsers = new List<string>();
             foreach(var el in userMenager.LiveUsers)
                 liveUsers.Add(el.Key);
@@ -40,8 +43,9 @@ namespace AmongUs_OurWay.Hubs
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            userMenager.LiveUsers.Remove(Context.UserIdentifier);
-            Clients.All.SendAsync("UserDiconnected", Context.UserIdentifier);
+            if(!userMenager.LiveUsers.ContainsKey(Context.UserIdentifier))
+                userMenager.LiveUsers.Remove(Context.UserIdentifier);
+            Clients.All.SendAsync("UserDisconnected", Context.UserIdentifier);
             return base.OnDisconnectedAsync(exception);
         }
     }

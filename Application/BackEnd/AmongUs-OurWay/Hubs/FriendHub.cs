@@ -61,9 +61,8 @@ namespace AmongUs_OurWay.Hubs
 
         public override Task OnConnectedAsync()
         {
-            Clients.All.SendAsync("UserConnected", Context.UserIdentifier);
             List<string> liveFriends = new List<string>();
-            Console.WriteLine("Usao");
+            Console.WriteLine("Usao " + Context.UserIdentifier);
             User user = dbContext.Users.Find(Context.UserIdentifier);
             ICollection<Friend> friends = user.Friends;
             foreach(var el in userMenager.LiveUsers)
@@ -72,6 +71,7 @@ namespace AmongUs_OurWay.Hubs
                     if(f.User2Ref == el.Key)
                     {
                         liveFriends.Add(el.Key);
+                        Clients.Client(el.Value).SendAsync("UserConnected", Context.UserIdentifier);
                         break;
                     }
             }
@@ -81,7 +81,7 @@ namespace AmongUs_OurWay.Hubs
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            Clients.All.SendAsync("UserDiconnected", Context.UserIdentifier);
+            Clients.All.SendAsync("UserDisconnected", Context.UserIdentifier);
             return base.OnDisconnectedAsync(exception);
         }
     }

@@ -10,23 +10,23 @@ import { Message } from 'src/app/models/message/message';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
-  public connection =  new signalR.HubConnectionBuilder()
-  .withUrl("/chat")
-  .build();
+  // public connection =  new signalR.HubConnectionBuilder()
+  // .withUrl("/chat")
+  // .build();
   public messages: Array<Message> = [];
 
 
   constructor() { }
 
   ngOnInit(): void {
-    this.connection.on("ReceiveMessage", (msg)=>{
-      this.messages.push(msg);
-    })
+    // this.connection.on("ReceiveMessage", (msg)=>{
+    //   this.messages.push(msg);
+    // })
 
-    this.connection.start()
-    .catch( (err)=>{
-      return console.error(err.toString());
-    });
+    // this.connection.start()
+    // .catch( (err)=>{
+    //   return console.error(err.toString());
+    // });
 
   }
 
@@ -36,9 +36,9 @@ export class ChatComponent implements OnInit {
     if(event)
       message  = event.target.parentNode.previousSibling.value;//document.getElementById('btn-input').textContent;
     console.log("click",message);
-    this.connection.invoke("SendMessageToAll", message).catch((err)=>{
-      return console.error(err.toString());
-    });
+    // this.connection.invoke("SendMessageToAll", message).catch((err)=>{
+    //   return console.error(err.toString());
+    // });
   }
 
   setTextContent(text){

@@ -1,5 +1,5 @@
 import { deleteUser, loadUsers } from 'src/app/store/actions/user.actions';
-import { AccountService } from './../../../services/account.service';
+import { AccountService } from '../../../services/account/account.service';
 import { State } from 'src/app/store/reducers/root.reducer';
 import { Component, OnInit } from '@angular/core';
 import { first } from 'rxjs/operators';

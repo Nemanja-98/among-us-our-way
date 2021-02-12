@@ -1,16 +1,15 @@
 
-import { environment } from './../../environments/environment';
-import { State } from '../store/reducers/root.reducer';
+import { environment } from '../../../environments/environment';
+import { State } from '../../store/reducers/root.reducer';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { UserService } from './user.service';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { User } from './../models/user';
+import { User } from '../../models/user';
 import { map } from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
-import { addUser, loadUsers } from '../store/actions/user.actions';
+import { addUser, loadUsers } from '../../store/actions/user.actions';
 class logInSessionToken {
   token: string;
 }
@@ -25,7 +24,6 @@ export class AccountService {
     private router: Router,
     private http: HttpClient,
     private store: Store<State>,
-    private userService: UserService
   ) {
     this.userSubject = new BehaviorSubject<User>(
       JSON.parse(localStorage.getItem('currentUser'))
@@ -37,25 +35,19 @@ export class AccountService {
     return this.userSubject.value;
   }
 
-  async login(username: string, password: string) {
+   login(username: string, password: string) {
     console.log("logging in");
-    // console.log("sending http ");
-    // let niz = await this.http.get('https://192.168.1.102:5001/user/getusers',{headers: {
-    //   'Access-Control-Allow-Origin': '*',
-    //   'Content-Type': 'application/json',
-    //   'Accept': 'application/json'
-    // }});
-    //console.log("niz",niz);
+    
     const post =  this.http
     .post('/user/login', {
        "Username":username,
       "Password": password,
-    },
-    {headers: {
+    },{headers: {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     }});;
+    
     post.toPromise().then((data : logInSessionToken) => {
       console.log("ejta",data);
       const token = data.token;
@@ -63,7 +55,7 @@ export class AccountService {
       localStorage.setItem('token', token );
     })
     return  post;
-      //
+      
   }
 
    logout() {

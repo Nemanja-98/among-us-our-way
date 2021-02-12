@@ -1,5 +1,5 @@
 
-import { AccountService } from './../services/account.service';
+import { AccountService } from '../services/account/account.service';
 import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';

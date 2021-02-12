@@ -2,8 +2,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 
-import { AccountService } from './../../../services/account.service';
-import { AlertService } from './../../../services/alert.service';
+import { AccountService } from '../../../services/account/account.service';
+import { AlertService } from '../../../services/alert/alert.service';
 import { State } from 'src/app/store/reducers/root.reducer';
 import { Store } from '@ngrx/store';
 import { first } from 'rxjs/operators';

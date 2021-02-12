@@ -1,5 +1,5 @@
 
-import { AccountService } from './../services/account.service';
+import { AccountService } from '../services/account/account.service';
 import {
   HttpRequest,
   HttpHandler,

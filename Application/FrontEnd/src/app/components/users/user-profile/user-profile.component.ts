@@ -1,6 +1,5 @@
 //import { selectAllProducts } from 'src/app/store/adapters/product.adapter';
-import { AccountService } from 'src/app/services/account.service';
-import { UserService } from 'src/app/services/user.service';
+import { AccountService } from 'src/app/services/account/account.service';
 import { State } from 'src/app/store/reducers/root.reducer';
 //import { Product } from 'src/app/models/product/product';
 import { Component, OnInit } from '@angular/core';
@@ -25,7 +24,6 @@ export class UserProfileComponent implements OnInit {
 
   constructor(
     private accountService: AccountService,
-    private userService: UserService,
     private store: Store<State>
   ) {
     this.searchText = '';

@@ -1,5 +1,5 @@
 //import { loadProducts } from './store/actions/product.actions';
-import { AccountService } from './services/account.service';
+import { AccountService } from './services/account/account.service';
 import { loadUsers } from './store/actions/user.actions';
 import { State } from './store/reducers/root.reducer';
 import { Component } from '@angular/core';
@@ -8,6 +8,7 @@ import { Role } from './models/role';
 import { User } from './models/user';
 import { Store } from '@ngrx/store';
 import { Title } from '@angular/platform-browser';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app',
@@ -26,6 +27,7 @@ export class AppComponent {
     private accountService: AccountService,
     private store: Store<State>,
     private titleService: Title,
+    private http : HttpClient
   ) {
     this.accountService.user.subscribe((x) => (this.user = x));
   }

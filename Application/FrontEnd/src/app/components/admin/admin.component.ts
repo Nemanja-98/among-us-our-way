@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { first } from 'rxjs/operators';
 
-import { AccountService } from 'src/app/services/account.service';
-import { UserService } from './../../services/user.service';
+import { AccountService } from 'src/app/services/account/account.service';
 import { User } from './../../models/user';
 
 @Component({
@@ -17,7 +16,6 @@ export class AdminComponent implements OnInit {
 
   constructor(
     private accountService: AccountService,
-    private userService: UserService
   ) {
     this.currentUser = this.accountService.userValue;
   }

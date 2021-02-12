@@ -3,8 +3,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 
-import { AccountService } from './../../../services/account.service';
-import { AlertService } from './../../../services/alert.service';
+import { AccountService } from '../../../services/account/account.service';
+import { AlertService } from '../../../services/alert/alert.service';
 import { Store } from '@ngrx/store';
 import { State } from 'src/app/store/reducers/root.reducer';
 import {
@@ -13,7 +13,6 @@ import {
   updateUser,
 } from 'src/app/store/actions/user.actions';
 import { Role } from 'src/app/models/role';
-import { UserService } from 'src/app/services/user.service';
 import { Update } from '@ngrx/entity';
 import { User } from 'src/app/models/user';
 
@@ -33,7 +32,6 @@ export class EditUserComponent implements OnInit {
   constructor(
     private accountService: AccountService,
     private alertService: AlertService,
-    private userService: UserService,
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private store: Store<State>,

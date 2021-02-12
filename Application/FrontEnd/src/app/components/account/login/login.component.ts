@@ -2,8 +2,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 
-import { AccountService } from './../../../services/account.service';
-import { AlertService  } from './../../../services/alert.service';
+import { AccountService } from '../../../services/account/account.service';
+import { AlertService  } from '../../../services/alert/alert.service';
 import { first } from 'rxjs/operators';
 
 @Component({ templateUrl: './login.component.html',  styleUrls: ['./login.component.css'] })
@@ -47,22 +47,30 @@ export class LoginComponent implements OnInit {
             return;
         }
 
-        // this.loading = true;
+         this.loading = true;
         console.log("user:",this.f.username.value,this.f.password.value);
-         const response = await this.accountService.login(this.f.username.value, this.f.password.value);
-        // console.log("return value",response);
+         const response =  await this.accountService.login(this.f.username.value, this.f.password.value);
+         console.log("return value",response);
+         
         // setTimeout(() => {
-        //     console.log(response);
+        //     console.log("awaited response in login:",response);
+        //     this.loading = false;
+            
         // }, 2000);
-        response.pipe(first())
-        .subscribe(
-            data => {
-                this.router.navigate([this.returnUrl]);
-            },
-            error => {
-                this.alertService.error(error);
-                this.loading = false;
-            }); 
+        // response.pipe(first())
+        // .subscribe(
+        //     data => {
+        //         this.router.navigate([this.returnUrl]);
+        //     },
+        //     error => {
+        //         this.alertService.error(error);
+        //         this.loading = false;
+        //     }); 
+     }
+}
+
+
+
             // .pipe(first())
             // .subscribe(
             //     data => {
@@ -72,5 +80,3 @@ export class LoginComponent implements OnInit {
             //         this.alertService.error(error);
             //         this.loading = false;
             //     });
-    }
-}

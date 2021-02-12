@@ -4,7 +4,7 @@ const PROXY_CONFIG = [
             "/user",
             "/game"
         ],
-        target: "https://localhost:5001",
+        target: "https://192.168.1.200:5002",
         secure: false,
         changeOrigin: true
     }

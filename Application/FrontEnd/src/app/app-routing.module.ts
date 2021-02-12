@@ -1,10 +1,10 @@
 import { UserProfileComponent } from './components/users/user-profile/user-profile.component';
 import { HomeComponent } from './components/home/home.component';
 import { Routes, RouterModule } from '@angular/router';
-import { AuthGuard } from './helpers/auth.guard';
 import { NgModule } from '@angular/core';
 import { Role } from './models/role';
 import { ChatComponent } from './components/chat/chat.component';
+import { LoginComponent } from './components/account/login/login.component';
 
 const accountModule = () =>
   import('./components/account/account/account.module').then(
@@ -17,20 +17,21 @@ const usersModule = () =>
 const routes: Routes = [
   {
     path: '',
+    component: LoginComponent,
+  },
+  {
+    path: 'home',
     component: HomeComponent,
-    canActivate: [AuthGuard],
   },
   {
     path: 'chat',
     component: ChatComponent,
-    canActivate: [AuthGuard],
   },
   {
     path: 'profile',
     component: UserProfileComponent,
-    canActivate: [AuthGuard],
   },
-  { path: 'users', loadChildren: usersModule, canActivate: [AuthGuard] },
+  { path: 'users', loadChildren: usersModule },
   { path: 'account', loadChildren: accountModule },
  
   { path: '**', redirectTo: '' },

@@ -4,12 +4,13 @@
             <div *ngIf="loading" class="spinner-border spinner-border-sm"></div>
         </div>
         <div *ngIf="!loading">
-            <ul *ngIf="friends">
-                <li *ngFor="let friend of friends" >
+            <ul *ngIf="friend">
+                <h2>YO FRIENDHUB SERVICE WORKIN</h2>
+                <li *ngFor="let item of friend">
                     <mat-card class="example-card">
-                        <mat-card-header >
+                        <mat-card-header>
                             <div mat-card-avatar class="example-header-image"></div>
-                            <mat-card-title (click)="fun()">{{friend.user2Ref}}</mat-card-title>
+                            <mat-card-title (click)="fun()">{{item}}</mat-card-title>
                             <app-chat></app-chat>
                             <mat-card-subtitle>Online</mat-card-subtitle>
                             <div id='notification'>{{textic}}</div>
@@ -18,5 +19,20 @@
                 </li>
             </ul>
         </div>
+
+        <ul *ngIf="chat">
+            <h2>YO CHATHUB SERVICE WORKIN</h2>
+            <li *ngFor="let item of chat">
+                <mat-card class="example-card">
+                    <mat-card-header>
+                        <div mat-card-avatar class="example-header-image"></div>
+                        <mat-card-title (click)="fun()">{{item}}</mat-card-title>
+                        <app-chat></app-chat>
+                        <mat-card-subtitle>Online</mat-card-subtitle>
+                        <div id='notification'>{{textic}}</div>
+                    </mat-card-header>
+                </mat-card>
+            </li>
+        </ul>
     </div>
 </div>

@@ -63,6 +63,8 @@ namespace AmongUs_OurWay
 
             services.AddSingleton<LiveUsersMenager>(new LiveUsersMenager());
             
+            services.AddSingleton<LiveGamesMenager>(new LiveGamesMenager());
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>{
                 options.TokenValidationParameters=new TokenValidationParameters{
                     ValidateIssuer = false,

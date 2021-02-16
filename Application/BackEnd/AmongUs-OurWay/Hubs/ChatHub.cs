@@ -14,38 +14,43 @@ namespace AmongUs_OurWay.Hubs
     {
         private AmongUsContext dbContext;
         private LiveUsersMenager userMenager;
-        public ChatHub(AmongUsContext db, LiveUsersMenager mng)
+        public ChatHub(AmongUsContext db, LiveUsersMenager mngU)
         {
             dbContext = db;
-            userMenager = mng;
+            userMenager = mngU;
         }        
-        public Task SendMesageToUser(string userId , string message)
+        public async Task SendMesageToUser(string userId , string message, string sentTime)
         {
             string connectionId = userMenager.LiveUsers.GetValueOrDefault(userId);
             if(connectionId == null)
-                return null;
-            return Clients.Client(connectionId).SendAsync("ReceiveMessage", Context.UserIdentifier, message);
+                return;
+            Message entry =  new Message{
+                UserSent = Context.UserIdentifier,
+                UserReceived = userId,
+                Content = message,
+                SentTime = sentTime
+            };
+            dbContext.Messages.Add(entry);
+            await Clients.Client(connectionId).SendAsync("ReceiveMessage", Context.UserIdentifier, message);
         }
 
-        public override Task OnConnectedAsync()
+        public override async Task<Task> OnConnectedAsync()
         {
             if(!userMenager.LiveUsers.ContainsKey(Context.UserIdentifier))
                 userMenager.LiveUsers.Add(Context.UserIdentifier, Context.ConnectionId);
-            else
-                userMenager.LiveUsers[Context.UserIdentifier] = Context.ConnectionId;
-            Clients.Others.SendAsync("UserConnected", Context.UserIdentifier);
+            await Clients.Others.SendAsync("UserConnected", Context.UserIdentifier);
             List<string> liveUsers = new List<string>();
             foreach(var el in userMenager.LiveUsers)
                 liveUsers.Add(el.Key);
-            Clients.Caller.SendAsync("GetLiveUsers", new JsonResult(new {userList = liveUsers}));
+            await Clients.Caller.SendAsync("GetLiveUsers", new JsonResult(new {userList = liveUsers}));
             return base.OnConnectedAsync();
         }
 
-        public override Task OnDisconnectedAsync(Exception exception)
+        public override async Task<Task> OnDisconnectedAsync(Exception exception)
         {
             if(!userMenager.LiveUsers.ContainsKey(Context.UserIdentifier))
                 userMenager.LiveUsers.Remove(Context.UserIdentifier);
-            Clients.All.SendAsync("UserDisconnected", Context.UserIdentifier);
+            await Clients.All.SendAsync("UserDisconnected", Context.UserIdentifier);
             return base.OnDisconnectedAsync(exception);
         }
     }

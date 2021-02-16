@@ -1,13 +1,31 @@
-using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AmongUs_OurWay.Models
 {
+    [Table("Message")]
     public class Message
     {
-        public string UserId { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DataType("int")]
+        [Column("Id")]
+        public int Id { get; set; }
         
-        public string Text { get; set; }
+        [DataType(DataType.Text)]
+        [Column("UserSent")]
+        public string UserSent { get; set; }
         
-        public string SentTime { get; set; }        
+        [DataType(DataType.Text)]
+        [Column("UserReceived")]
+        public string UserReceived { get; set; }
+        
+        [DataType(DataType.Text)]
+        [Column("Content")]
+        public string Content { get; set; }
+        
+        [DataType(DataType.Text)]
+        [Column("SentTime")]
+        public string SentTime { get; set; }
    }
 }

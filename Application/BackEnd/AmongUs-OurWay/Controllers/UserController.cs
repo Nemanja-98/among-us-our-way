@@ -14,6 +14,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using AmongUs_OurWay.Hubs;
 
+
 namespace AmongUs_OurWay.Controllers
 {
     [Authorize]
@@ -23,10 +24,13 @@ namespace AmongUs_OurWay.Controllers
     public class UserController : ControllerBase
     {
         private AmongUsContext dbContext;
+        private LiveGamesMenager gameMenager;
+        private Random rand = new Random();
 
-        public UserController(AmongUsContext db)
+        public UserController(AmongUsContext db, LiveGamesMenager mng)
         {
             dbContext = db;
+            gameMenager = mng;
         }
 
         [AllowAnonymous]
@@ -58,6 +62,47 @@ namespace AmongUs_OurWay.Controllers
             return user;
         }
 
+        [HttpGet]
+        [Route("userMessages/{userSentId}/{userReceivedId}")]
+        public ActionResult GetMessages(string userSentId, string userReceivedId)
+        {
+            User userSent = dbContext.Users.Find(userSentId);
+            User userReceived = dbContext.Users.Find(userReceivedId);
+            if(userSent == null || userReceived == null)
+                return NotFound();
+            string callerUsername =  User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            if(callerUsername == null || callerUsername != userSent.Username)
+                return Unauthorized();
+            List<Message> result = new List<Message>();
+            foreach(Message m in dbContext.Messages)
+            {
+                if(m.UserSent == userSent.Username && m.UserReceived == userReceived.Username)
+                {
+                    result.Add(m);
+                    continue;
+                }
+                if(m.UserReceived == userSent.Username && m.UserSent == userReceived.Username)
+                    result.Add(m);
+            }
+            return new JsonResult(new {messages = result});
+        }
+
+        [HttpGet]
+        [Route("generateCode")]
+        public ActionResult GetCode()
+        {
+            char[] code = new char[Constants.codeLength];
+            string result = "";
+            do
+            {
+                for(int i = 0 ; i < Constants.codeLength ; i++)
+                    code[i] = Constants.codeChars[rand.Next(Constants.codeChars.Length)];
+                result =  new String(code);
+            }while(gameMenager.LiveGames.Contains(result));
+            gameMenager.LiveGames.Add(result);
+            return new JsonResult(new {code = result});
+        }
+
         [AllowAnonymous]
         [HttpPost]
         [Route("addUser")]
@@ -83,7 +128,6 @@ namespace AmongUs_OurWay.Controllers
                 return NotFound("User not found");
             if(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value != user.Username)
                 return Unauthorized();
-            user.Games.Add(game);
             dbContext.GameHistorys.Add(game);
             dbContext.SaveChanges();
             return Ok();
@@ -122,8 +166,6 @@ namespace AmongUs_OurWay.Controllers
                 return NotFound("Users not found");
             if(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value != userSent.Username)
                 return Unauthorized();
-            userSent.SentRequests.Add(pendingRequest);
-            userRecieved.PendingRequests.Add(pendingRequest);
             dbContext.PendingRequests.Add(pendingRequest);
             dbContext.SaveChanges();
             return Ok();

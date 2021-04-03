@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace AmongUs_OurWay.Hubs
 {
-    [Authorize]
     public class FriendHub : Hub
     {
         private AmongUsContext dbContext;
@@ -19,17 +18,21 @@ namespace AmongUs_OurWay.Hubs
             userMenager = mng;
         }
 
-        public async Task SendFriendRequest(PendingRequest pendingRequest)
+        public async Task SendFriendRequest(string userSentRef, string userReceivedRef)
         {
-            if(pendingRequest.UserSentRef == null || pendingRequest.UserReceivedRef == null)
+            if(userSentRef == null || userReceivedRef == null)
                 return;
-            User userSent = dbContext.Users.Find(pendingRequest.UserSentRef);
-            User userRecieved = dbContext.Users.Find(pendingRequest.UserReceivedRef);
+            User userSent = dbContext.Users.Find(userSentRef);
+            User userRecieved = dbContext.Users.Find(userReceivedRef);
             if((userSent == null) || (userRecieved == null))
                 return;
+            PendingRequest pendingRequest = new PendingRequest{
+                UserSentRef = userSentRef,
+                UserReceivedRef = userReceivedRef
+            };
             dbContext.PendingRequests.Add(pendingRequest);
             dbContext.SaveChanges();
-            string connectionId = userMenager.LiveFriends.GetValueOrDefault(pendingRequest.UserReceivedRef);
+            string connectionId = userMenager.LiveFriends.GetValueOrDefault(userReceivedRef);
             if(connectionId == null)
                 return;
             await Clients.Client(connectionId).SendAsync("RequestReceived", userSent.Username);
@@ -59,9 +62,9 @@ namespace AmongUs_OurWay.Hubs
         {
             if(!userMenager.LiveFriends.ContainsKey(Context.UserIdentifier))
                 userMenager.LiveFriends.Add(Context.UserIdentifier, Context.ConnectionId);
+            else
+                return  null;
             List<string> liveFriends = new List<string>();
-            Console.WriteLine("Usao " + Context.UserIdentifier);
-            await Clients.Client(Context.ConnectionId).SendAsync("Hello", Context.UserIdentifier);
             User user = dbContext.Users.Find(Context.UserIdentifier);
             ICollection<Friend> friends = user.Friends;
             foreach(var el in userMenager.LiveFriends)
@@ -80,7 +83,7 @@ namespace AmongUs_OurWay.Hubs
 
         public override async Task<Task> OnDisconnectedAsync(Exception exception)
         {
-            if(!userMenager.LiveFriends.ContainsKey(Context.UserIdentifier))
+            if(userMenager.LiveFriends.ContainsKey(Context.UserIdentifier))
                 userMenager.LiveFriends.Remove(Context.UserIdentifier);
             await Clients.All.SendAsync("UserDisconnected", Context.UserIdentifier);
             return base.OnDisconnectedAsync(exception);

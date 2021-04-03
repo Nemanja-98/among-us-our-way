@@ -24,7 +24,7 @@ namespace AmongUs_OurWay.Models {
         public DbSet<PendingRequest> PendingRequests { get; set; }
 
         public DbSet<Message> Messages { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //User

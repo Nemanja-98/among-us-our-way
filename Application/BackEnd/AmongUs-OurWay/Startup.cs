@@ -42,10 +42,10 @@ namespace AmongUs_OurWay
 
             services.AddSignalR(options =>{
                 options.EnableDetailedErrors = true;
-            })
-            .AddJsonProtocol(options => {
-                options.PayloadSerializerOptions.WriteIndented = true;
-            }).AddMessagePackProtocol();
+            });
+            // .AddJsonProtocol(options => {
+            //     options.PayloadSerializerOptions.WriteIndented = true;
+            // }).AddMessagePackProtocol();
 
             services.AddSwaggerGen(c =>
             {
@@ -99,9 +99,9 @@ namespace AmongUs_OurWay
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chat");
                 endpoints.MapHub<FriendHub>("/friend");
-                endpoints.MapControllers();
             });
         }
     }

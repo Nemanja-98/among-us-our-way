@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\AmongUs-OurWay.csproj": {}
+    "c:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\AmongUs-OurWay.csproj": {}
   },
   "projects": {
-    "C:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\AmongUs-OurWay.csproj": {
+    "c:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\AmongUs-OurWay.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\AmongUs-OurWay.csproj",
+        "projectUniqueName": "c:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\AmongUs-OurWay.csproj",
         "projectName": "AmongUs-OurWay",
-        "projectPath": "C:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\AmongUs-OurWay.csproj",
+        "projectPath": "c:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\AmongUs-OurWay.csproj",
         "packagesPath": "C:\\Users\\Luka\\.nuget\\packages\\",
-        "outputPath": "C:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\obj\\",
+        "outputPath": "c:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Luka\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -99,6 +99,10 @@
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[12.0.3, )"
+            },
+            "OpenTok": {
+              "target": "Package",
+              "version": "[3.6.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

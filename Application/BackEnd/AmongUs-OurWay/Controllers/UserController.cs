@@ -63,6 +63,19 @@ namespace AmongUs_OurWay.Controllers
         }
 
         [HttpGet]
+        [Route("getUserByToken")]
+        public ActionResult<User> GetUsrByToken()
+        {
+            string username = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            if(username == null)
+                return BadRequest();
+            User user = dbContext.Users.Find(username);
+            if(user == null)
+                return NotFound();
+            return user;
+        }
+
+        [HttpGet]
         [Route("userMessages/{userSentId}/{userReceivedId}")]
         public ActionResult GetMessages(string userSentId, string userReceivedId)
         {
@@ -210,6 +223,21 @@ namespace AmongUs_OurWay.Controllers
             dbContext.SaveChanges();
             return Ok();
         }
+
+        [HttpDelete]
+        [Route("deleteRequest/{requestId}")]
+        public ActionResult DeleteRequest(string requestId)
+        {
+            PendingRequest pendingRequest = dbContext.PendingRequests.Find(requestId);
+            if(pendingRequest == null)
+                return NotFound();
+            string callerUsername = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            if(callerUsername != pendingRequest.UserSentRef || callerUsername != pendingRequest.UserReceivedRef)
+                return Unauthorized();
+            dbContext.PendingRequests.Remove(pendingRequest);
+            dbContext.SaveChanges();
+            return Ok();
+        }
 /////////////////////////////////////////////////////////////////////////Login
         
         [AllowAnonymous]
@@ -236,7 +264,7 @@ namespace AmongUs_OurWay.Controllers
             var key=new SymmetricSecurityKey(Encoding.UTF8.GetBytes("AmongUsAwesomeSeacretKey"));
             var creds= new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 
-            var token=new JwtSecurityToken("https://localhost:5001/", "http://localhost:8080/", 
+            var token=new JwtSecurityToken("https://localhost:5001/", "http://localhost:4200/", 
             claims ,expires: DateTime.Now.AddDays(1), signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

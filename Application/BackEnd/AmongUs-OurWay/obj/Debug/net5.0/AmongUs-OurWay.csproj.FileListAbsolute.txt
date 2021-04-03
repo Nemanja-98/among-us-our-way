@@ -76,3 +76,5 @@ C:\-4thGrade-\APS\AmongUs-OurWay\among-us-our-way\Application\BackEnd\AmongUs-Ou
 C:\-4thGrade-\APS\AmongUs-OurWay\among-us-our-way\Application\BackEnd\AmongUs-OurWay\bin\Debug\net5.0\Microsoft.AspNetCore.SignalR.Protocols.MessagePack.dll
 C:\-4thGrade-\APS\AmongUs-OurWay\among-us-our-way\Application\BackEnd\AmongUs-OurWay\bin\Debug\net5.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\-4thGrade-\APS\AmongUs-OurWay\among-us-our-way\Application\BackEnd\AmongUs-OurWay\bin\Debug\net5.0\System.IO.Pipelines.dll
+C:\-4thGrade-\APS\AmongUs-OurWay\among-us-our-way\Application\BackEnd\AmongUs-OurWay\bin\Debug\net5.0\JWT.dll
+C:\-4thGrade-\APS\AmongUs-OurWay\among-us-our-way\Application\BackEnd\AmongUs-OurWay\bin\Debug\net5.0\OpenTok.dll

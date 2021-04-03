@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AmongUs_OurWay.Hubs
 {
-    [Authorize]
     public class ChatHub : Hub
     {
         private AmongUsContext dbContext;
@@ -38,11 +37,14 @@ namespace AmongUs_OurWay.Hubs
         {
             if(!userMenager.LiveUsers.ContainsKey(Context.UserIdentifier))
                 userMenager.LiveUsers.Add(Context.UserIdentifier, Context.ConnectionId);
+            else
+                return null;
             await Clients.Others.SendAsync("UserConnected", Context.UserIdentifier);
             List<string> liveUsers = new List<string>();
             foreach(var el in userMenager.LiveUsers)
                 liveUsers.Add(el.Key);
             await Clients.Caller.SendAsync("GetLiveUsers", new JsonResult(new {userList = liveUsers}));
+            Console.WriteLine("Connected " + Context.UserIdentifier);
             return base.OnConnectedAsync();
         }
 
@@ -51,6 +53,7 @@ namespace AmongUs_OurWay.Hubs
             if(!userMenager.LiveUsers.ContainsKey(Context.UserIdentifier))
                 userMenager.LiveUsers.Remove(Context.UserIdentifier);
             await Clients.All.SendAsync("UserDisconnected", Context.UserIdentifier);
+            Console.WriteLine("Disconnected " + Context.UserIdentifier);
             return base.OnDisconnectedAsync(exception);
         }
     }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace AmongUs_OurWay.Hubs
 {
+    [Authorize]
     public class FriendHub : Hub
     {
         private AmongUsContext dbContext;

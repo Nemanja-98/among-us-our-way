@@ -19,6 +19,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using AmongUs_OurWay.DataManagement;
 
 namespace AmongUs_OurWay
 {
@@ -64,6 +65,8 @@ namespace AmongUs_OurWay
             services.AddSingleton<LiveUsersMenager>(new LiveUsersMenager());
             
             services.AddSingleton<LiveGamesMenager>(new LiveGamesMenager());
+
+            services.AddSingleton<Repository>(new Repository(new RepositoryConnection()));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>{
                 options.TokenValidationParameters=new TokenValidationParameters{

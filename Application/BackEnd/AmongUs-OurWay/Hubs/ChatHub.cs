@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AmongUs_OurWay.Hubs
 {
+    [Authorize]
     public class ChatHub : Hub
     {
         private AmongUsContext dbContext;
@@ -44,16 +45,18 @@ namespace AmongUs_OurWay.Hubs
             foreach(var el in userMenager.LiveUsers)
                 liveUsers.Add(el.Key);
             await Clients.Caller.SendAsync("GetLiveUsers", new JsonResult(new {userList = liveUsers}));
-            Console.WriteLine("Connected " + Context.UserIdentifier);
+            Console.WriteLine("Connected " + Context.UserIdentifier + " " + DateTime.Now.TimeOfDay.ToString());
             return base.OnConnectedAsync();
         }
 
         public override async Task<Task> OnDisconnectedAsync(Exception exception)
         {
-            if(!userMenager.LiveUsers.ContainsKey(Context.UserIdentifier))
+            if(userMenager.LiveUsers.ContainsKey(Context.UserIdentifier))
                 userMenager.LiveUsers.Remove(Context.UserIdentifier);
+            else
+                return null;
             await Clients.All.SendAsync("UserDisconnected", Context.UserIdentifier);
-            Console.WriteLine("Disconnected " + Context.UserIdentifier);
+            Console.WriteLine("Disconnected " + Context.UserIdentifier + " " + DateTime.Now.TimeOfDay.ToString());
             return base.OnDisconnectedAsync(exception);
         }
     }

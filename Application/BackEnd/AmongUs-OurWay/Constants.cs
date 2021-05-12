@@ -1,8 +1,8 @@
 namespace AmongUs_OurWay
 {
-    public class Constants
+    public static class Constants
     {
-        public static int codeLength = 4;
-        public static string codeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        public static int _codeLength = 4;
+        public static string _codeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     }
 }

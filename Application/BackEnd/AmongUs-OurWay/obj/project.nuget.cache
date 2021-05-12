@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "I2pLhMlmrxgoZUT9/gtShpnOPG9BjAbX3z9/fu6q9gtrXi4/i/ydflUumMNZ0mJhZthk74cEbwPR4wv00mXqCw==",
+  "dgSpecHash": "HUc7Iqx1nEnlYsSOdEq82MuOxI3fmBTjltaN63Ins/eaGHcZriHvtee9D/nN0AzzPFBoFwdtRC2nb8XU1HXZzA==",
   "success": true,
-  "projectFilePath": "c:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\AmongUs-OurWay.csproj",
+  "projectFilePath": "C:\\-4thGrade-\\APS\\AmongUs-OurWay\\among-us-our-way\\Application\\BackEnd\\AmongUs-OurWay\\AmongUs-OurWay.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Luka\\.nuget\\packages\\castle.core\\4.4.1\\castle.core.4.4.1.nupkg.sha512",
     "C:\\Users\\Luka\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",

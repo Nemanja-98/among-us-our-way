@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using AmongUs_OurWay.Models;
+using AmongUs_OurWay.DataManagement;
 
 namespace AmongUs_OurWay.Controllers
 {
@@ -13,20 +14,20 @@ namespace AmongUs_OurWay.Controllers
     [Route("[controller]")]
     public class GameController : ControllerBase
     {
-        private AmongUsContext dbContext;
-        public GameController(AmongUsContext db)
+        private IGameRepository _repository;
+        public GameController(Repository repo)
         {
-            dbContext = db;
+            _repository = repo.GetGameRepository();
         }
 
         [HttpGet]
         [Route("getGame/{gameId}")]
         public ActionResult<Game> GetGame(int gameId)
         {
-            Game game = dbContext.Games.Find(gameId);
-            if(game == null)
-                return NotFound("Game not found");
-            return game;
+            ActionResult<Game> result = _repository.GetGame(gameId);
+            if(result == null)
+                return NotFound();
+            return result;
         }
 
         [HttpPost]
@@ -35,12 +36,9 @@ namespace AmongUs_OurWay.Controllers
         {
             if(!ModelState.IsValid)
                 return BadRequest("Invalid input values");
-            Game game = dbContext.Games.Find(action.GameId);
-            if(game == null)
-                return NotFound("Game not found");
-            game.Actions.Add(action);
-            dbContext.PlayerActions.Add(action);
-            dbContext.SaveChanges();
+            ServerResponse retVal = _repository.AddAction(action);
+            if(retVal == ServerResponse.NotFound)
+                return NotFound();
             return Ok();
         }
 
@@ -50,12 +48,9 @@ namespace AmongUs_OurWay.Controllers
         {
             if(!ModelState.IsValid)
                 return BadRequest("Invalid input values");
-            Game game = dbContext.Games.Find(gameHistory.GameId);
-            if(game == null)
-                return NotFound("Game not found");
-            game.Players.Add(gameHistory);
-            dbContext.GameHistorys.Add(gameHistory);
-            dbContext.SaveChanges();
+            ServerResponse retVal = _repository.AddPlayer(gameHistory);
+            if(retVal == ServerResponse.NotFound)
+                return NotFound();
             return Ok();
         }
 
@@ -65,8 +60,7 @@ namespace AmongUs_OurWay.Controllers
         {
             if(!ModelState.IsValid)
                 return BadRequest("Invalid input values");
-            dbContext.Games.Add(game);
-            dbContext.SaveChanges();
+            _repository.AddGame(game);
             return Ok();
         }
     }

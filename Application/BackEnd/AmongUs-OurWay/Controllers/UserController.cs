@@ -13,7 +13,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using AmongUs_OurWay.Hubs;
-
+using AmongUs_OurWay.DataManagement;
 
 namespace AmongUs_OurWay.Controllers
 {
@@ -23,14 +23,14 @@ namespace AmongUs_OurWay.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private AmongUsContext dbContext;
-        private LiveGamesMenager gameMenager;
+        private IUserRepository _repository;
+        private LiveGamesMenager _gameMenager;
         private Random rand = new Random();
 
-        public UserController(AmongUsContext db, LiveGamesMenager mng)
+        public UserController(Repository repo, LiveGamesMenager mng)
         {
-            dbContext = db;
-            gameMenager = mng;
+            _repository = repo.GetUserRepository();
+            _gameMenager = mng;
         }
 
         [AllowAnonymous]
@@ -38,38 +38,34 @@ namespace AmongUs_OurWay.Controllers
         [Route("getUsers")]
         public ActionResult<List<User>> GetUsers()
         {
-            return dbContext.Users.ToList();
+            return _repository.UserList();
         }
 
         [HttpGet]
         [Route("search/{substr}")]
         public ActionResult<List<User>> getSearch(string substr)
         {
-            List<User> result = new List<User>();
-            foreach(User u in dbContext.Users.ToList())
-                if(u.Username.Contains(substr))
-                    result.Add(u);
-            return result;
+            return _repository.Search(substr);
         }
 
         [HttpGet]
         [Route("getUser/{username}")]
         public ActionResult<User> GetUser(string username)
         {
-            User user = dbContext.Users.Find(username);
-            if(user == null)
-                return NotFound();
-            return user;
+            ActionResult<User> result = _repository.GetUserByUsername(username);
+            if(result == null)
+                result = NotFound();
+            return result;
         }
 
         [HttpGet]
         [Route("getUserByToken")]
-        public ActionResult<User> GetUsrByToken()
+        public ActionResult<User> GetUserByToken()
         {
             string username = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
             if(username == null)
                 return BadRequest();
-            User user = dbContext.Users.Find(username);
+            User user = _repository.GetUserByUsername(username);
             if(user == null)
                 return NotFound();
             return user;
@@ -79,40 +75,29 @@ namespace AmongUs_OurWay.Controllers
         [Route("userMessages/{userSentId}/{userReceivedId}")]
         public ActionResult GetMessages(string userSentId, string userReceivedId)
         {
-            User userSent = dbContext.Users.Find(userSentId);
-            User userReceived = dbContext.Users.Find(userReceivedId);
+            User userSent = _repository.GetUserByUsername(userSentId);
+            User userReceived = _repository.GetUserByUsername(userReceivedId);
             if(userSent == null || userReceived == null)
                 return NotFound();
             string callerUsername =  User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
             if(callerUsername == null || callerUsername != userSent.Username)
                 return Unauthorized();
-            List<Message> result = new List<Message>();
-            foreach(Message m in dbContext.Messages)
-            {
-                if(m.UserSent == userSent.Username && m.UserReceived == userReceived.Username)
-                {
-                    result.Add(m);
-                    continue;
-                }
-                if(m.UserReceived == userSent.Username && m.UserSent == userReceived.Username)
-                    result.Add(m);
-            }
-            return new JsonResult(new {messages = result});
+            return _repository.GetMessages(userSent, userReceived);
         }
 
         [HttpGet]
         [Route("generateCode")]
         public ActionResult GetCode()
         {
-            char[] code = new char[Constants.codeLength];
+            char[] code = new char[Constants._codeLength];
             string result = "";
             do
             {
-                for(int i = 0 ; i < Constants.codeLength ; i++)
-                    code[i] = Constants.codeChars[rand.Next(Constants.codeChars.Length)];
+                for(int i = 0 ; i < Constants._codeLength ; i++)
+                    code[i] = Constants._codeChars[rand.Next(Constants._codeChars.Length)];
                 result =  new String(code);
-            }while(gameMenager.LiveGames.Contains(result));
-            gameMenager.LiveGames.Add(result);
+            }while(_gameMenager.LiveGames.Contains(result));
+            _gameMenager.LiveGames.Add(result);
             return new JsonResult(new {code = result});
         }
 
@@ -123,10 +108,9 @@ namespace AmongUs_OurWay.Controllers
         {
             if(!ModelState.IsValid)
                 return BadRequest("Invalid input values");
-            if(dbContext.Users.Find(user.Username) != null)
+            if(_repository.GetUserByUsername(user.Username) != null)
                 return Conflict();
-            dbContext.Users.Add(user);
-            dbContext.SaveChanges();
+            _repository.SaveUser(user);
             return Ok();
         }
 
@@ -136,13 +120,11 @@ namespace AmongUs_OurWay.Controllers
         {
             if(!ModelState.IsValid)
                 return BadRequest("Invalid input values");
-            User user = dbContext.Users.Find(game.UserId);
-            if(user == null)
-                return NotFound("User not found");
-            if(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value != user.Username)
+            ServerResponse retVal = _repository.AddGame(game, User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            if(retVal == ServerResponse.NotFound)
+                return NotFound();
+            if(retVal == ServerResponse.Unauthorized)
                 return Unauthorized();
-            dbContext.GameHistorys.Add(game);
-            dbContext.SaveChanges();
             return Ok();
         }
         
@@ -152,18 +134,13 @@ namespace AmongUs_OurWay.Controllers
         {
             if(!ModelState.IsValid)
                 return BadRequest("Invalid input values");
-            User user1 = dbContext.Users.Find(friend.User1Ref);
-            User user2 = dbContext.Users.Find(friend.User2Ref);
+            User user1 = _repository.GetUserByUsername(friend.User1Ref);
+            User user2 = _repository.GetUserByUsername(friend.User2Ref);
             if((user1 == null) || (user2 == null))
                 return NotFound("Users not found");
             if(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value != user1.Username)
                 return Unauthorized();
-            Friend reverseFriend = new Friend{
-                User1Ref = friend.User2Ref,
-                User2Ref = friend.User1Ref};
-            dbContext.Friends.Add(friend);
-            dbContext.Friends.Add(reverseFriend);
-            dbContext.SaveChanges();
+            _repository.AddFriend(friend);
             return Ok();
         }
 
@@ -173,14 +150,13 @@ namespace AmongUs_OurWay.Controllers
         {
             if(!ModelState.IsValid)
                 return BadRequest("Invalid input values");
-            User userSent = dbContext.Users.Find(pendingRequest.UserSentRef);
-            User userRecieved = dbContext.Users.Find(pendingRequest.UserReceivedRef);
+            User userSent = _repository.GetUserByUsername(pendingRequest.UserSentRef);
+            User userRecieved = _repository.GetUserByUsername(pendingRequest.UserReceivedRef);
             if((userSent == null) || (userRecieved == null))
                 return NotFound("Users not found");
             if(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value != userSent.Username)
                 return Unauthorized();
-            dbContext.PendingRequests.Add(pendingRequest);
-            dbContext.SaveChanges();
+            _repository.AddRequest(pendingRequest);
             return Ok();
         }
 
@@ -190,13 +166,12 @@ namespace AmongUs_OurWay.Controllers
         {
             if(!ModelState.IsValid)
                 return BadRequest("Invalid input values");
-            User user = dbContext.Users.Find(action.UserId);
+            User user = _repository.GetUserByUsername(action.UserId);
             if(user == null)
                 return NotFound("User not found");
             if(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value != user.Username)
                 return Unauthorized();
-            dbContext.PlayerActions.Add(action);
-            dbContext.SaveChanges();
+            _repository.AddAction(action);
             return Ok();
         }
 
@@ -206,21 +181,12 @@ namespace AmongUs_OurWay.Controllers
         {
             if(!ModelState.IsValid)
                 return BadRequest("Invalid input values");
-            User swap = dbContext.Users.Find(user.Username);
+            User swap = _repository.GetUserByUsername(user.Username);
             if(swap == null)
                 return NotFound("User not found");
             if(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value != swap.Username)
                 return Unauthorized();
-            swap.Password = user.Password;
-            swap.GamesPlayed = user.GamesPlayed;
-            swap.CrewmateGames = user.CrewmateGames;
-            swap.ImpostorGames = user.ImpostorGames;
-            swap.CrewmateWonGames = user.CrewmateWonGames;
-            swap.ImpostorWonGames = user.ImpostorWonGames;
-            swap.TasksCompleted = user.TasksCompleted;
-            swap.AllTasksCompleted = user.AllTasksCompleted;
-            swap.Kills = user.Kills;
-            dbContext.SaveChanges();
+            _repository.UpdateUser(swap);
             return Ok();
         }
 
@@ -228,14 +194,12 @@ namespace AmongUs_OurWay.Controllers
         [Route("deleteRequest/{requestId}")]
         public ActionResult DeleteRequest(string requestId)
         {
-            PendingRequest pendingRequest = dbContext.PendingRequests.Find(requestId);
-            if(pendingRequest == null)
+            
+            ServerResponse retVal = _repository.DeleteRequest(requestId, User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            if(retVal == ServerResponse.NotFound)
                 return NotFound();
-            string callerUsername = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            if(callerUsername != pendingRequest.UserSentRef || callerUsername != pendingRequest.UserReceivedRef)
+            if(retVal == ServerResponse.Unauthorized)
                 return Unauthorized();
-            dbContext.PendingRequests.Remove(pendingRequest);
-            dbContext.SaveChanges();
             return Ok();
         }
 /////////////////////////////////////////////////////////////////////////Login
@@ -273,7 +237,7 @@ namespace AmongUs_OurWay.Controllers
         private User Authenticate(LoginModel login)
         {
             User user;
-            if((user = dbContext.Users.Find(login.Username)) == null)
+            if((user = _repository.GetUserByUsername(login.Username)) == null)
                 return null;
             if(user.Password == login.Password)
                 return user;

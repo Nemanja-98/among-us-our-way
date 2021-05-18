@@ -22,9 +22,9 @@ namespace AmongUs_OurWay.Controllers
 
         [HttpGet]
         [Route("getGame/{gameId}")]
-        public ActionResult<Game> GetGame(int gameId)
+        public async Task<ActionResult<Game>> GetGame(int gameId)
         {
-            ActionResult<Game> result = _repository.GetGame(gameId);
+            ActionResult<Game> result = await _repository.GetGame(gameId);
             if(result == null)
                 return NotFound();
             return result;
@@ -32,11 +32,11 @@ namespace AmongUs_OurWay.Controllers
 
         [HttpPost]
         [Route("addAction")]
-        public ActionResult PostAction(PlayerAction action)
+        public async Task<ActionResult> PostAction(PlayerAction action)
         {
             if(!ModelState.IsValid)
                 return BadRequest("Invalid input values");
-            ServerResponse retVal = _repository.AddAction(action);
+            ServerResponse retVal = await _repository.AddAction(action);
             if(retVal == ServerResponse.NotFound)
                 return NotFound();
             return Ok();
@@ -44,11 +44,11 @@ namespace AmongUs_OurWay.Controllers
 
         [HttpPost]
         [Route("addPlayer")]
-        public ActionResult PostPlayer(GameHistory gameHistory)
+        public async Task<ActionResult> PostPlayer(GameHistory gameHistory)
         {
             if(!ModelState.IsValid)
                 return BadRequest("Invalid input values");
-            ServerResponse retVal = _repository.AddPlayer(gameHistory);
+            ServerResponse retVal = await _repository.AddPlayer(gameHistory);
             if(retVal == ServerResponse.NotFound)
                 return NotFound();
             return Ok();
@@ -56,11 +56,11 @@ namespace AmongUs_OurWay.Controllers
 
         [HttpPost]
         [Route("addGame")]
-        public ActionResult PostGame(Game game)
+        public async Task<ActionResult> PostGame(Game game)
         {
             if(!ModelState.IsValid)
                 return BadRequest("Invalid input values");
-            _repository.AddGame(game);
+            await _repository.AddGame(game);
             return Ok();
         }
     }

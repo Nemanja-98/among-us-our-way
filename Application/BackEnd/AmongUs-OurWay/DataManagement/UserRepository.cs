@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using AmongUs_OurWay.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AmongUs_OurWay.DataManagement
 {
@@ -14,56 +15,63 @@ namespace AmongUs_OurWay.DataManagement
             _dbContext = db;
         }
 
-        public ServerResponse AddAction(PlayerAction action)
+        public async Task<ServerResponse> AddAction(PlayerAction action)
         {
-            _dbContext.PlayerActions.Add(action);
-            _dbContext.SaveChanges();
+            await _dbContext.PlayerActions.AddAsync(action);
+            await _dbContext.SaveChangesAsync();
             return ServerResponse.Ok;
         }
 
-        public ServerResponse AddFriend(Friend friend)
+        public async Task<ServerResponse> AddFriend(Friend friend)
         {
             Friend reverseFriend = new Friend{
                 User1Ref = friend.User2Ref,
                 User2Ref = friend.User1Ref};
-            _dbContext.Friends.Add(friend);
-            _dbContext.Friends.Add(reverseFriend);
-            _dbContext.SaveChanges();
+            await _dbContext.Friends.AddAsync(friend);
+            await _dbContext.Friends.AddAsync(reverseFriend);
+            await _dbContext.SaveChangesAsync();
             return ServerResponse.Ok;
         }
 
-        public ServerResponse AddGame(GameHistory game, string callerUsername)
+        public async Task<ServerResponse> AddGame(GameHistory game, string callerUsername)
         {
-            User user = _dbContext.Users.Find(game.UserId);
+            User user = await _dbContext.Users.FindAsync(game.UserId);
             if(user == null)
                 return ServerResponse.NotFound;
             if(callerUsername != user.Username)
                 return ServerResponse.Unauthorized;
-            _dbContext.GameHistorys.Add(game);
-            _dbContext.SaveChanges();
+            await _dbContext.GameHistorys.AddAsync(game);
+            await _dbContext.SaveChangesAsync();
             return ServerResponse.Ok;
         }
 
-        public ServerResponse AddRequest(PendingRequest pendingRequest)
+        public async Task<ServerResponse> AddMessage(Message message)
         {
-            _dbContext.PendingRequests.Add(pendingRequest);
-            _dbContext.SaveChanges();
+            await _dbContext.Messages.AddAsync(message);
+            await _dbContext.SaveChangesAsync();
             return ServerResponse.Ok;
         }
 
-        public ServerResponse DeleteRequest(string requestId, string username)
+        public async Task<ServerResponse> AddRequest(PendingRequest pendingRequest)
         {
-            PendingRequest pendingRequest = _dbContext.PendingRequests.Find(requestId);
+            await _dbContext.PendingRequests.AddAsync(pendingRequest);
+            await _dbContext.SaveChangesAsync();
+            return ServerResponse.Ok;
+        }
+
+        public async Task<ServerResponse> DeleteRequest(string requestId, string username)
+        {
+            PendingRequest pendingRequest = await _dbContext.PendingRequests.FindAsync(requestId);
             if(pendingRequest == null)
                 return ServerResponse.NotFound;
             if(username != pendingRequest.UserSentRef || username != pendingRequest.UserReceivedRef)
                 return ServerResponse.Unauthorized;
             _dbContext.PendingRequests.Remove(pendingRequest);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return ServerResponse.Ok;
         }
 
-        public ActionResult GetMessages(User userSent, User userReceived)
+        public async Task<ActionResult> GetMessages(User userSent, User userReceived)
         {
             List<Message> result = new List<Message>();
             foreach(Message m in _dbContext.Messages)
@@ -79,22 +87,22 @@ namespace AmongUs_OurWay.DataManagement
             return new JsonResult(new {messages = result});
         }
 
-        public User GetUserByUsername(string username)
+        public async Task<User> GetUserByUsername(string username)
         {
-            User user = _dbContext.Users.Find(username);
+            User user = await _dbContext.Users.FindAsync(username);
             if(user == null)
                 return null;
             return user;
         }
 
-        public ServerResponse SaveUser(User user)
+        public async Task<ServerResponse> SaveUser(User user)
         {
-            _dbContext.Users.Add(user);
-            _dbContext.SaveChanges();
+            await _dbContext.Users.AddAsync(user);
+            await _dbContext.SaveChangesAsync();
             return ServerResponse.Ok;
         }
 
-        public List<User> Search(string substr)
+        public async Task<List<User>> Search(string substr)
         {
             List<User> result = new List<User>();
             foreach(User u in _dbContext.Users.ToList())
@@ -103,7 +111,7 @@ namespace AmongUs_OurWay.DataManagement
             return result;
         }
 
-        public ServerResponse UpdateUser(User user)
+        public async Task<ServerResponse> UpdateUser(User user)
         {
             user.Password = user.Password;
             user.GamesPlayed = user.GamesPlayed;
@@ -114,11 +122,11 @@ namespace AmongUs_OurWay.DataManagement
             user.TasksCompleted = user.TasksCompleted;
             user.AllTasksCompleted = user.AllTasksCompleted;
             user.Kills = user.Kills;
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return ServerResponse.Ok;
         }
 
-        public List<User> UserList()
+        public async Task<List<User>> UserList()
         {
             return _dbContext.Users.ToList();
         }

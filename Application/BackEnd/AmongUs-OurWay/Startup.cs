@@ -20,6 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using AmongUs_OurWay.DataManagement;
+using Microsoft.AspNetCore.Http;
 
 namespace AmongUs_OurWay
 {
@@ -88,17 +89,20 @@ namespace AmongUs_OurWay
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AmongUs_OurWay v1"));
             }
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseCors("ServerPolicyV1");
+
             app.UseWebSockets();
+
+            app.Use(async (context, next) => await AuthQueryStringToHeader(context, next));
 
             app.UseAuthentication();
 
             app.UseAuthorization();
-
-            app.UseCors("ServerPolicyV1");
 
             app.UseEndpoints(endpoints =>
             {
@@ -106,6 +110,25 @@ namespace AmongUs_OurWay
                 endpoints.MapHub<ChatHub>("/chat");
                 endpoints.MapHub<FriendHub>("/friend");
             });
+        }
+
+        private async Task AuthQueryStringToHeader(HttpContext context, Func<Task> next)
+        {
+            var queryString = context.Request.QueryString;
+
+            if (string.IsNullOrWhiteSpace(context.Request.Headers["Authorization"]) && queryString.HasValue)
+            {
+                var token = (from pair in queryString.Value.TrimStart('?').Split('&')
+                        where pair.StartsWith("access_token=")
+                        select pair.Substring(13)).FirstOrDefault();
+
+                if (!string.IsNullOrWhiteSpace(token))
+                {
+                    context.Request.Headers.Add("Authorization", "Bearer " + token);
+                }
+            }
+
+            await next?.Invoke();
         }
     }
 }

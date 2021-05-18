@@ -6,22 +6,23 @@ using AmongUs_OurWay.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AmongUs_OurWay.DataManagement;
 
 namespace AmongUs_OurWay.Hubs
 {
     [Authorize]
     public class ChatHub : Hub
     {
-        private AmongUsContext dbContext;
-        private LiveUsersMenager userMenager;
-        public ChatHub(AmongUsContext db, LiveUsersMenager mngU)
+        private IUserRepository _repository;
+        private LiveUsersMenager _userMenager;
+        public ChatHub(Repository repo, LiveUsersMenager mngU)
         {
-            dbContext = db;
-            userMenager = mngU;
+            _repository = repo.GetUserRepository();
+            _userMenager = mngU;
         }        
-        public async Task SendMesageToUser(string userId , string message, string sentTime)
+        public async Task SendMessageToUser(string userId , string message, string sentTime)
         {
-            string connectionId = userMenager.LiveUsers.GetValueOrDefault(userId);
+            string connectionId = _userMenager.LiveUsers.GetValueOrDefault(userId);
             if(connectionId == null)
                 return;
             Message entry =  new Message{
@@ -30,19 +31,19 @@ namespace AmongUs_OurWay.Hubs
                 Content = message,
                 SentTime = sentTime
             };
-            dbContext.Messages.Add(entry);
-            await Clients.Client(connectionId).SendAsync("ReceiveMessage", Context.UserIdentifier, message);
+            await _repository.AddMessage(entry);
+            await Clients.Client(connectionId).SendAsync("ReceiveMessage", Context.UserIdentifier, message, sentTime);
         }
 
         public override async Task<Task> OnConnectedAsync()
         {
-            if(!userMenager.LiveUsers.ContainsKey(Context.UserIdentifier))
-                userMenager.LiveUsers.Add(Context.UserIdentifier, Context.ConnectionId);
+            if(!_userMenager.LiveUsers.ContainsKey(Context.UserIdentifier))
+                _userMenager.LiveUsers.Add(Context.UserIdentifier, Context.ConnectionId);
             else
                 return null;
             await Clients.Others.SendAsync("UserConnected", Context.UserIdentifier);
             List<string> liveUsers = new List<string>();
-            foreach(var el in userMenager.LiveUsers)
+            foreach(var el in _userMenager.LiveUsers)
                 liveUsers.Add(el.Key);
             await Clients.Caller.SendAsync("GetLiveUsers", new JsonResult(new {userList = liveUsers}));
             Console.WriteLine("Connected " + Context.UserIdentifier + " " + DateTime.Now.TimeOfDay.ToString());
@@ -51,8 +52,8 @@ namespace AmongUs_OurWay.Hubs
 
         public override async Task<Task> OnDisconnectedAsync(Exception exception)
         {
-            if(userMenager.LiveUsers.ContainsKey(Context.UserIdentifier))
-                userMenager.LiveUsers.Remove(Context.UserIdentifier);
+            if(_userMenager.LiveUsers.ContainsKey(Context.UserIdentifier))
+                _userMenager.LiveUsers.Remove(Context.UserIdentifier);
             else
                 return null;
             await Clients.All.SendAsync("UserDisconnected", Context.UserIdentifier);

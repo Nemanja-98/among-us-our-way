@@ -1,15 +1,16 @@
+using System.Threading.Tasks;
 using AmongUs_OurWay.Models;
 
 namespace AmongUs_OurWay.DataManagement
 {
     public interface IGameRepository
     {
-        Game GetGame(int gameId);
+        Task<Game> GetGame(int gameId);
 
-        ServerResponse AddAction(PlayerAction action);
+        Task<ServerResponse> AddAction(PlayerAction action);
 
-        ServerResponse AddPlayer(GameHistory gameHistory);
+        Task<ServerResponse> AddPlayer(GameHistory gameHistory);
 
-        ServerResponse AddGame(Game game);
+        Task<ServerResponse> AddGame(Game game);
     }
 }

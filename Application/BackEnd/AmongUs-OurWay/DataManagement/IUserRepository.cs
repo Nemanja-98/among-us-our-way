@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AmongUs_OurWay.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,26 +7,28 @@ namespace AmongUs_OurWay.DataManagement
 {
     public interface IUserRepository
     {
-        List<User> UserList();
+        Task<List<User>> UserList();
 
-        List<User> Search(string substr);
+        Task<List<User>> Search(string substr);
 
-        User GetUserByUsername(string username);
+        Task<User> GetUserByUsername(string username);
 
-        ActionResult GetMessages(User userSent, User userReceived);
+        Task<ActionResult> GetMessages(User userSent, User userReceived);
 
-        ServerResponse SaveUser(User user);
+        Task<ServerResponse> AddMessage(Message message);
 
-        ServerResponse AddGame(GameHistory game, string callerUsername);
+        Task<ServerResponse> SaveUser(User user);
 
-        ServerResponse AddFriend(Friend friend);
+        Task<ServerResponse> AddGame(GameHistory game, string callerUsername);
 
-        ServerResponse AddRequest(PendingRequest pendingRequest);
+        Task<ServerResponse> AddFriend(Friend friend);
 
-        ServerResponse AddAction(PlayerAction action);
+        Task<ServerResponse> AddRequest(PendingRequest pendingRequest);
 
-        ServerResponse UpdateUser(User user);
+        Task<ServerResponse> AddAction(PlayerAction action);
 
-        ServerResponse DeleteRequest(string requestId, string username);
+        Task<ServerResponse> UpdateUser(User user);
+
+        Task<ServerResponse> DeleteRequest(string requestId, string username);
     }
 }

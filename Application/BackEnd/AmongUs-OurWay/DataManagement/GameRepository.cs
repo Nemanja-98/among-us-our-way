@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using AmongUs_OurWay.Models;
 
 namespace AmongUs_OurWay.DataManagement
@@ -11,38 +12,38 @@ namespace AmongUs_OurWay.DataManagement
             _dbContext = db;
         }
 
-        public ServerResponse AddAction(PlayerAction action)
+        public async Task<ServerResponse> AddAction(PlayerAction action)
         {
-            Game game = _dbContext.Games.Find(action.GameId);
+            Game game = await _dbContext.Games.FindAsync(action.GameId);
             if(game == null)
                 return ServerResponse.NotFound;
-            game.Actions.Add(action);
-            _dbContext.PlayerActions.Add(action);
+            //game.Actions.Add(action);
+            await _dbContext.PlayerActions.AddAsync(action);
+            await _dbContext.SaveChangesAsync();
+            return ServerResponse.Ok;
+        }
+
+        public async Task<ServerResponse> AddGame(Game game)
+        {
+            await _dbContext.Games.AddAsync(game);
             _dbContext.SaveChanges();
             return ServerResponse.Ok;
         }
 
-        public ServerResponse AddGame(Game game)
+        public async Task<ServerResponse> AddPlayer(GameHistory gameHistory)
         {
-            _dbContext.Games.Add(game);
-            _dbContext.SaveChanges();
-            return ServerResponse.Ok;
-        }
-
-        public ServerResponse AddPlayer(GameHistory gameHistory)
-        {
-            Game game = _dbContext.Games.Find(gameHistory.GameId);
+            Game game = await _dbContext.Games.FindAsync(gameHistory.GameId);
             if(game == null)
                 return ServerResponse.NotFound;
-            game.Players.Add(gameHistory);
-            _dbContext.GameHistorys.Add(gameHistory);
-            _dbContext.SaveChanges();
+            //game.Players.Add(gameHistory);
+            await _dbContext.GameHistorys.AddAsync(gameHistory);
+            await _dbContext.SaveChangesAsync();
             return ServerResponse.Ok;
         }
 
-        public Game GetGame(int gameId)
+        public async Task<Game> GetGame(int gameId)
         {
-            Game game = _dbContext.Games.Find(gameId);
+            Game game = await _dbContext.Games.FindAsync(gameId);
             if(game == null)
                 return null;
             return game;
